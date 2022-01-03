@@ -13,3 +13,7 @@ class Logger:
     else:
       self.nlogger = None
   
+  def logging(self, name, value):
+    if self.neptune:
+      self.nlogger[name].log(value)
+  

@@ -2,6 +2,8 @@ import torchvision.transforms as transforms
 import torchvision.datasets as dset
 
 import os
+import random
+import numpy as np
 
 class cifar:
   normalize = transforms.Normalize(
@@ -55,6 +57,38 @@ class cifar100(cifar):
     valid_dataset = dset.CIFAR100(root=root, train=False, download=True, transform=cls.valid_transform)
     return train_dataset, valid_dataset
 
+class decrementalCifar:
+  def __init__(self, cfg):
+    self.root = cfg["root"]
+    self.random_order = cfg["random_order"]
+    self.num_class = cfg["num_class"]
+
+    self.train_dataset, self.valid_dataset = cifar100()(cfg)
+    self.train_dataset = self._reduce_class(self.train_dataset)
+    self.valid_dataset = self._reduce_class(self.valid_dataset)
+
+  def _reduce_class(self, dataset):
+    class_list = list(dataset.class_to_idx.values())
+    if self.random_order and self.selected_class is None:
+      selected_class = random.sample(class_list, self.num_class)
+    else:
+      selected_class = list(range(self.num_class))
+    self.selected_class = selected_class
+    
+    mask = np.full_like(dataset.targets, False, dtype=bool)
+    orginal_targets = np.array(dataset.targets)
+    for target_class in selected_class:
+      mask = np.logical_or(mask, orginal_targets == target_class)
+
+    dataset.data = dataset.data[mask]
+    dataset.targets = list(orginal_targets[mask])
+    
+    return dataset
+
+  def get_data(self):
+    return self.train_dataset, self.valid_dataset
+
+
 class imageNet(imagenet):
   @classmethod
   def __call__(cls, cfg):
@@ -68,12 +102,18 @@ class imageNet(imagenet):
     return train_dataset, valid_dataset
 
 
-available_dataset = {
+public_dataset = {
   "cifar10": cifar10(),
   "cifar100": cifar100(),
   "imageNet": imageNet(),
 }
+decremental_dataset = {
+  "dec_cifar": decrementalCifar,
+}
+
 
 def load_dataset(cfg):
-  return available_dataset[cfg["dataset"]](cfg)
-
+  if cfg["dataset"] in public_dataset.keys():
+    return public_dataset[cfg["dataset"]](cfg)
+  elif cfg["dataset"] in decremental_dataset.keys():
+    return decremental_dataset[cfg["dataset"]](cfg).get_data()

@@ -23,10 +23,13 @@ project: raeyo/decremental
 token: eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiI0OTA1Mzk4OS04MWI4LTQ5YjctYTViZi1iZDEyNjFlOWJmMzAifQ==
 
 # dataset
-dataset: cifar100 # cifar10, cifar100, imageNet
+dataset: dec_cifar # cifar10, cifar100, imageNet, dec_cifar
 root: /data/sung/dataset/cifar100 # lecun
 # root: /data/sung/dataset/cifar10 # lecun cifar10
 # root: /data/sung/dataset/imagenet # lecun imagenet
+# decremental setting
+random_order: False
+num_class: 20
 
 # log dir
 log_dir: results # lecun

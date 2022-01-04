@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# neptune
+.neptune
+
+# log dir
+results

@@ -1,8 +1,12 @@
 batch_size: 128
-maximum_epoch: 200
+maximum_epoch: 100
 
 lr: 0.0001 
 wd: 0.000001
+milestone:
+- 50
+- 75
+- 90
 
 test_interval: 1
 seed: 0

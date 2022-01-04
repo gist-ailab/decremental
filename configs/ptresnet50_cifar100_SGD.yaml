@@ -1,7 +1,7 @@
 batch_size: 128
 maximum_epoch: 200
 
-optimizer: Adam # [Adam, SGD]
+optimizer: SGD # [Adam, SGD]
 
 # Adam setting
 lr: 0.0001 

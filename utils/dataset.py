@@ -42,7 +42,7 @@ class imagenet:
 class cifar10(cifar):
   @classmethod
   def __call__(cls, cfg):
-    root = cfg["cifar"]
+    root = cfg["root"]
     train_dataset = dset.CIFAR10(root=root, train=True, download=True, transform=cls.train_transform)
     valid_dataset = dset.CIFAR10(root=root, train=False, download=True, transform=cls.valid_transform)
     return train_dataset, valid_dataset
@@ -50,7 +50,7 @@ class cifar10(cifar):
 class cifar100(cifar):
   @classmethod
   def __call__(cls, cfg):
-    root = cfg["cifar"]
+    root = cfg["root"]
     train_dataset = dset.CIFAR100(root=root, train=True, download=True, transform=cls.train_transform)
     valid_dataset = dset.CIFAR100(root=root, train=False, download=True, transform=cls.valid_transform)
     return train_dataset, valid_dataset
@@ -58,7 +58,7 @@ class cifar100(cifar):
 class imageNet(imagenet):
   @classmethod
   def __call__(cls, cfg):
-    root = cfg["imagenet"]
+    root = cfg["root"]
     train_dataset = dset.ImageFolder(
       root=os.path.join(root, "train"),
       train=True, download=True, transform=cls.train_transform)

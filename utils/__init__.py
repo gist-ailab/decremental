@@ -2,5 +2,5 @@ from .config import load_config
 from .logger import Logger
 from .dataset import load_dataset
 from .resnet import resnet50
-from .scheduler import *
-
+from .loop import *
+from .optimizer import AdamOpt, SGDOpt

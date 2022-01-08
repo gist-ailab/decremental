@@ -52,7 +52,6 @@ val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=128, num_worker
 
 '''Load Model'''
 model = load_model(cfg) # 20
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
@@ -120,4 +119,5 @@ for epoch in range(1, cfg["maximum_epoch"]+1):
       "model_state_dict": model.state_dict()
       }, os.path.join(log_dir, "checkpoint_{}.pkl".format(epoch)))
     
-  print("EPOCH : {} =====\n".format(epoch),logger)
+  print("=====EPOCH : {} =====".format(epoch))
+  print(logger)

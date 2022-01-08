@@ -13,6 +13,9 @@ def load_config(config_path):
   with open(config_path, 'r') as f:
     cfg = yaml.safe_load(f)
   
+  #seed
+  random.seed(cfg["seed"])
+
   # neptune
   cfg["project"] = NEPTUNE_PROJECT
   cfg["token"] = NEPTUNE_TOKEN

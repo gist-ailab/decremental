@@ -144,10 +144,10 @@ def resnet34():
     """
     return ResNet(BasicBlock, [3, 4, 6, 3])
 
-def resnet50():
+def resnet50(**kwargs):
     """ return a ResNet 50 object
     """
-    return ResNet(BottleNeck, [3, 4, 6, 3])
+    return ResNet(BottleNeck, [3, 4, 6, 3], **kwargs)
 
 def resnet101():
     """ return a ResNet 101 object
@@ -160,4 +160,10 @@ def resnet152():
     return ResNet(BottleNeck, [3, 8, 36, 3])
 
 
+available_model = {
+    "resnet50": resnet50
+}
+
+def load_model(cfg):
+    return available_model[cfg["model"]](num_classes=cfg["num_class"])
 

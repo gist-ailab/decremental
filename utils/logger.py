@@ -13,7 +13,16 @@ class Logger:
     else:
       self.nlogger = None
   
+    self.log = ""
+
   def logging(self, name, value):
     if self.is_neptune:
       self.nlogger[name].log(value)
-  
+
+    self.log += "{}: {:.6f}\n".format(name, value)
+
+  def __str__(self):
+    log = self.log
+    self.log = ""
+    return log
+

@@ -29,7 +29,6 @@ log_dir: results # lecun
 
 #TODO: dataset settings
 dataset: cifar100 # cifar10, cifar100, imagenet, decre_cifar100
-
 root: /data/sung/dataset/cifar100 # lecun
 # root: /data/sung/dataset/cifar10 # lecun cifar10
 # root: /data/sung/dataset/imagenet # lecun imagenet

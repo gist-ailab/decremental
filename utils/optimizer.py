@@ -17,6 +17,17 @@ class OptBase:
     pass
   def zero_grad(self):
     self.optimizer.zero_grad()
+
+  def state_dict(self):
+    state_dict = {
+      "optimizer": self.optimizer.state_dict(),
+    }
+    if self.scheduler is None:
+      state_dict["scheduler"] = None
+    else:
+      state_dict["scheduler"] = self.scheduler.state_dict()
+    return state_dict
+    
   @property
   def last_learning_rate(self):
     return self.optimizer.param_groups[0]['lr']
@@ -28,7 +39,7 @@ class AdamOpt(OptBase):
 
 class SGDOpt(OptBase):
   def __init__(self, parameters, max_iter, cfg):
-    optimizer=SGD(parameters, lr=0.1, momentum=0.9, weight_decay=5e-4)
+    optimizer=SGD(parameters, lr=cfg["lr"], momentum=0.9, weight_decay=cfg["wd"])
     train_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=cfg["milestone"], gamma=0.2) #learning rate decay
     warmup_scheduler = WarmUpLR(optimizer, max_iter)
     self.warmup_epoch = cfg["warmup_epoch"]

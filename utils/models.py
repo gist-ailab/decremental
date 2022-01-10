@@ -144,10 +144,10 @@ def resnet34():
     """
     return ResNet(BasicBlock, [3, 4, 6, 3])
 
-def resnet50(**kwargs):
+def resnet50(cfg):
     """ return a ResNet 50 object
     """
-    return ResNet(BottleNeck, [3, 4, 6, 3], **kwargs)
+    return ResNet(BottleNeck, [3, 4, 6, 3], num_classes=cfg["num_class"])
 
 def resnet101():
     """ return a ResNet 101 object
@@ -159,11 +159,46 @@ def resnet152():
     """
     return ResNet(BottleNeck, [3, 8, 36, 3])
 
+def nibd_cifar(cfg):
+    return NiBD(cfg)
+
+class NiBD(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.resnet = available_model[cfg["model"]]()
+        self.score_layer = nn.Linear(100, cfg["num_class"])
+
+    def forward(self, x):
+        score = self.resnet(x)
+        output = self.score_layer(score)
+
+        return output
+
+class ScoreNet(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.target_class = cfg["selected_class"]
+        self.other_class = list(set(range(100)) - set(self.target_class))            
+        self.score_layer = nn.Sequential(
+            nn.Linear(80, cfg["num_class"]),
+            nn.ReUL(inplace=True))
+        self.last_layer = nn.Linear(40, 20)
+
+    def forward(self, x):
+        target_score = x[:, self.target_class]
+        other_score = x[:, self.other_class]
+        output = self.score_layer(other_score)
+        output = torch.cat((target_score, output), dim=1)
+        output = self.last_layer(output)
+
+        return output
+
 
 available_model = {
-    "resnet50": resnet50
+    "resnet50": resnet50,
+    "nibd_cifar": nibd_cifar 
 }
 
 def load_model(cfg):
-    return available_model[cfg["model"]](num_classes=cfg["num_class"])
+    return available_model[cfg["model"]](cfg)
 

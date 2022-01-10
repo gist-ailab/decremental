@@ -14,8 +14,8 @@ from utils import *
 '''Argument'''
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', default='default', help='configuration name')
-parser.add_argument('--gpu', default="0", help='gpu id')
+parser.add_argument('--config', default='dec_resnet50_cifar20_fix', help='configuration name')
+parser.add_argument('--gpu', default="4", help='gpu id')
 parser.add_argument('--neptune', action='store_true', help='logging to neptune')
 
 args = parser.parse_args()
@@ -51,35 +51,49 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg["batch_
 val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=128, num_workers=4)
 
 '''Load Model'''
+cfg["num_class"] = 100
 model = load_model(cfg) # 20
+cfg["num_class"] = 20
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
-# load pretrained
+#TODO: load pretrained
 if cfg["pretrained"] is not None:
   state_dict = torch.load(os.path.join(cfg["log_dir"], cfg["pretrained"], "best.pkl"))
-
-  #TODO: 
-  for key, value in state_dict.items():
-    if "fc" in key:
-      state_dict[key] = value[:cfg["num_class"]] # 
-
+  # cifar 100 -> 20 for selected class
+  # for key, value in state_dict.items():
+  #   if "fc" in key:
+  #     state_dict[key] = value[cfg["selected_class"]]
+  
   model.load_state_dict(state_dict)
 
-  #TODO: freeze
+  # #TODO: freeze or not
+
+  # freeze all
   for name, param in model.named_parameters():
-    if not "bias" in name:
-      param.requires_grad = False
+    param.requires_grad = False
+
+  # for name, param in model.named_parameters():
+  #   if not "bias" in name:
+  #     pass
+      # param.requires_grad = False
+
 else:
   pass
+
+
+net = ScoreNet(cfg)
+net = net.to(device)
+
+model = nn.Sequential(model, net)
 
 #TODO: resume
 
 '''Optimizer'''
 if cfg["optimizer"] == "Adam":
-  optimizer = AdamOpt(model.parameters(), cfg)
+  optimizer = AdamOpt(net.parameters(), cfg)
 elif cfg["optimizer"] == "SGD":
-  optimizer = SGDOpt(model.parameters(), len(train_loader), cfg)
+  optimizer = SGDOpt(net.parameters(), len(train_loader), cfg)
 else:
   raise NotImplementedError
 

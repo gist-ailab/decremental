@@ -93,4 +93,5 @@ class get_target_class:
     else:
       selected_class = list(range(cfg["num_class"]))
   
+    selected_class.sort()
     return selected_class

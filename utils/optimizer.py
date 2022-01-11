@@ -41,19 +41,29 @@ class SGDOpt(OptBase):
   def __init__(self, parameters, max_iter, cfg):
     optimizer=SGD(parameters, lr=cfg["lr"], momentum=0.9, weight_decay=cfg["wd"])
     train_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=cfg["milestone"], gamma=0.2) #learning rate decay
-    warmup_scheduler = WarmUpLR(optimizer, max_iter)
+    
     self.warmup_epoch = cfg["warmup_epoch"]
+    if self.warmup_epoch > 0:
+      warmup_scheduler = WarmUpLR(optimizer, max_iter*self.warmup_epoch)
+    else:
+      warmup_scheduler = None
     super(SGDOpt, self).__init__(
       optimizer=optimizer,
       scheduler=train_scheduler,
       warmup=warmup_scheduler
       )  
   
-  def update(self, epoch):
-    if epoch > self.warmup_epoch:
-      self.scheduler.step(epoch)
+  def update(self, epoch, is_warmup=False):
+    if epoch <= self.warmup_epoch and is_warmup:
+      previous = self.last_learning_rate
+      self.warmup.step()
+      print("Warm up lr: {} >>> {}".format(previous, self.last_learning_rate))
+    elif epoch > self.warmup_epoch and not is_warmup:
+      previous = self.last_learning_rate
+      self.scheduler.step()
+      print("Schedule lr: {} >>> {}".format(previous, self.last_learning_rate))
     else:
-      self.warmup.step(epoch)
+      pass
 
 
 class WarmUpLR(_LRScheduler): # https://github.com/weiaicunzai/pytorch-cifar100/blob/2149cb57f517c6e5fa7262f958652227225d125b/utils.py#L234

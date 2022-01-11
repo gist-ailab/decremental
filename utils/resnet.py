@@ -134,71 +134,27 @@ class ResNet(nn.Module):
 
         return output
 
-def resnet18():
+def resnet18(**kwargs):
     """ return a ResNet 18 object
     """
-    return ResNet(BasicBlock, [2, 2, 2, 2])
+    return ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
 
-def resnet34():
+def resnet34(**kwargs):
     """ return a ResNet 34 object
     """
-    return ResNet(BasicBlock, [3, 4, 6, 3])
+    return ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
 
-def resnet50(cfg):
+def resnet50(**kwargs):
     """ return a ResNet 50 object
     """
-    return ResNet(BottleNeck, [3, 4, 6, 3], num_classes=cfg["num_class"])
+    return ResNet(BottleNeck, [3, 4, 6, 3], **kwargs)
 
-def resnet101():
+def resnet101(**kwargs):
     """ return a ResNet 101 object
     """
-    return ResNet(BottleNeck, [3, 4, 23, 3])
+    return ResNet(BottleNeck, [3, 4, 23, 3], **kwargs)
 
-def resnet152():
+def resnet152(**kwargs):
     """ return a ResNet 152 object
     """
-    return ResNet(BottleNeck, [3, 8, 36, 3])
-
-def nibd_cifar(cfg):
-    return NiBD(cfg)
-
-class NiBD(nn.Module):
-    def __init__(self, cfg):
-        super().__init__()
-        self.resnet = available_model[cfg["model"]]()
-        self.score_layer = nn.Linear(100, cfg["num_class"])
-
-    def forward(self, x):
-        score = self.resnet(x)
-        output = self.score_layer(score)
-
-        return output
-
-class ScoreNet(nn.Module):
-    def __init__(self, cfg):
-        super().__init__()
-        self.target_class = cfg["selected_class"]
-        self.other_class = list(set(range(100)) - set(self.target_class))            
-        self.score_layer = nn.Sequential(
-            nn.Linear(80, cfg["num_class"]),
-            nn.ReUL(inplace=True))
-        self.last_layer = nn.Linear(40, 20)
-
-    def forward(self, x):
-        target_score = x[:, self.target_class]
-        other_score = x[:, self.other_class]
-        output = self.score_layer(other_score)
-        output = torch.cat((target_score, output), dim=1)
-        output = self.last_layer(output)
-
-        return output
-
-
-available_model = {
-    "resnet50": resnet50,
-    "nibd_cifar": nibd_cifar 
-}
-
-def load_model(cfg):
-    return available_model[cfg["model"]](cfg)
-
+    return ResNet(BottleNeck, [3, 8, 36, 3], **kwargs)

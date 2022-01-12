@@ -23,8 +23,8 @@ def train_loop(model, optimizer, data_loader, loss_function, epoch):
     total += targets.size(0)
     _, predicts = outputs.max(1)
     correct += predicts.eq(targets).sum().item()
-    optimizer.update(epoch)
-
+    optimizer.update(epoch, is_warmup=True)
+  optimizer.update(epoch)
   acc = correct/total
   loss = total_loss/len(data_loader)
   

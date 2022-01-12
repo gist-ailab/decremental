@@ -33,11 +33,11 @@ def imagenet(cfg, return_train=True):
   train_transform, valid_transform = cfg["transform"]('imagenet')
   valid_dataset = dset.ImageFolder(
     root=os.path.join(root, "val"),
-    train=False, download=True, transform=valid_transform)
+    transform=valid_transform)
   if return_train:
     train_dataset = dset.ImageFolder(
       root=os.path.join(root, "train"),
-      train=True, download=True, transform=train_transform)
+      transform=train_transform)
     return train_dataset, valid_dataset
   else:
     return valid_dataset
@@ -87,6 +87,49 @@ class DecreCifar100(dset.CIFAR100):
     self.class_to_idx = reduced_class_to_idx
     self.classes = list(reduced_class_to_idx.keys())
 
+class DecreImageNet(dset.ImageFolder):
+  """
+  reduce class ==> N
+  - by selected class
+  """
+  def __init__(self, cfg, **kwargs):
+    super(DecreImageNet, self).__init__(**kwargs)
+
+    self.selected_class = cfg["selected_class"]
+    self.selected_class.sort()
+    self.reduce_class()
+    print("Target Class is >>>".format(len(self.selected_class)))
+    for class_name, index in self.class_to_idx.items():
+      print("CLASS {:<15} | ID: {:<3} | ORIGINAL ID:{:<3}".format(class_name, index,
+                                                           self.idx_to_orginal[index]))
+        
+
+  def reduce_class(self):
+    self.original_to_target = {}
+
+    mask = np.full_like(self.targets, False, dtype=bool)
+    orginal_targets = np.array(self.targets)
+    for target_class in self.selected_class:
+      mask = np.logical_or(mask, orginal_targets == target_class)
+    
+    reduced_data = self.data[mask]
+    unique_labels, reduced_targets = np.unique(orginal_targets[mask], return_inverse=True)
+    
+    reduced_class_to_idx = {}
+    idx_to_orginal = {}
+    for name, ind in self.class_to_idx.items():
+      if ind in unique_labels:
+        reduced_class_to_idx[name] = self.selected_class.index(ind)
+        idx_to_orginal[self.selected_class.index(ind)] = ind
+    self.idx_to_orginal = idx_to_orginal
+    
+    self.data = reduced_data
+    self.targets = reduced_targets
+    self.class_to_idx = reduced_class_to_idx
+    self.classes = list(reduced_class_to_idx.keys())
+
+
+
 def decre_cifar100(cfg, return_train=True):
   root = cfg["root"]
   train_transform, valid_transform = cfg["transform"]('cifar')
@@ -97,6 +140,21 @@ def decre_cifar100(cfg, return_train=True):
     return train_dataset, valid_dataset
   else:
     return valid_dataset
+
+def decre_imagenet(cfg, return_train=True):
+  root = cfg["root"]
+  train_transform, valid_transform = cfg["transform"]('cifar')
+  valid_dataset = DecreImageNet(
+    root=os.path.join(root, "val"),
+    transform=valid_transform)
+  if return_train:
+    train_dataset = DecreImageNet(
+      root=os.path.join(root, "train"),
+      transform=train_transform)
+    return train_dataset, valid_dataset
+  else:
+    return valid_dataset
+
 
 #endregion
 
@@ -109,6 +167,7 @@ available_dataset = {
 
   # custom dataset
   "decre_cifar100": decre_cifar100,
+  "decre_imagenet": decre_imagenet,
 }
 
 def load_dataset(cfg, return_train=True):

@@ -132,5 +132,4 @@ dmypy.json
 .neptune
 
 # log dir
-results
 *.pkl

@@ -1,4 +1,4 @@
-from .config import load_config
+from .config import load_config, get_transform
 from .logger import Logger
 from .dataset import load_dataset
 from .loop import *

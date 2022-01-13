@@ -133,3 +133,5 @@ dmypy.json
 
 # log dir
 *.pkl
+
+compare_results

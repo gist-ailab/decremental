@@ -10,12 +10,13 @@ from torchvision.models.resnet import ResNet
 import numpy as np
 
 from utils import *
+from models import load_model
 
 '''Argument'''
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', default='dec_resnet50_cifar20_fix', help='configuration name')
-parser.add_argument('--gpu', default="4", help='gpu id')
+parser.add_argument('--config', default='resnet50_imagenet', help='configuration name')
+parser.add_argument('--gpu', default="1", help='gpu id')
 parser.add_argument('--neptune', action='store_true', help='logging to neptune')
 
 args = parser.parse_args()
@@ -41,7 +42,6 @@ torch.cuda.manual_seed(cfg["seed"])
 os.environ["CUDA_DEVICE_ORDER"]= "PCI_BUS_ID" 
 os.environ["CUDA_VISIBLE_DEVICES"]= args.gpu
 
-
 '''Load Data'''
 #Load Dataset
 train_dataset, val_dataset = load_dataset(cfg, return_train=True)
@@ -51,49 +51,15 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg["batch_
 val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=128, num_workers=4)
 
 '''Load Model'''
-cfg["num_class"] = 100
-model = load_model(cfg) # 20
-cfg["num_class"] = 20
+model = load_model(cfg)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
-#TODO: load pretrained
-if cfg["pretrained"] is not None:
-  state_dict = torch.load(os.path.join(cfg["log_dir"], cfg["pretrained"], "best.pkl"))
-  # cifar 100 -> 20 for selected class
-  # for key, value in state_dict.items():
-  #   if "fc" in key:
-  #     state_dict[key] = value[cfg["selected_class"]]
-  
-  model.load_state_dict(state_dict)
-
-  # #TODO: freeze or not
-
-  # freeze all
-  for name, param in model.named_parameters():
-    param.requires_grad = False
-
-  # for name, param in model.named_parameters():
-  #   if not "bias" in name:
-  #     pass
-      # param.requires_grad = False
-
-else:
-  pass
-
-
-net = ScoreNet(cfg)
-net = net.to(device)
-
-model = nn.Sequential(model, net)
-
-#TODO: resume
-
 '''Optimizer'''
 if cfg["optimizer"] == "Adam":
-  optimizer = AdamOpt(net.parameters(), cfg)
+  optimizer = AdamOpt(model.parameters(), cfg)
 elif cfg["optimizer"] == "SGD":
-  optimizer = SGDOpt(net.parameters(), len(train_loader), cfg)
+  optimizer = SGDOpt(model.parameters(), len(train_loader), cfg)
 else:
   raise NotImplementedError
 

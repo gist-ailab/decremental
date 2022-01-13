@@ -1,9 +1,9 @@
 
 # model and training setting
-model: resnet50
-pretrained: NULL
+model: resnet50_imagenet100
+pretrained: resnet50_imagenet
 
-batch_size: 128
+batch_size: 64
 maximum_epoch: 100
 test_interval: 1
 seed: 0
@@ -28,12 +28,13 @@ warmup_epoch: 1
 log_dir: results # lecun
 
 #TODO: dataset settings
-dataset: decre_cifar100 # cifar10, cifar100, imagenet, decre_cifar100
-root: /data/sung/dataset/cifar100 # lecun
+dataset: decre_imagenet # cifar10, cifar100, imagenet, decre_cifar100, decre_imagenet
+# root: /data/sung/dataset/cifar100 # lecun
 # root: /data/sung/dataset/cifar10 # lecun cifar10
 # root: /data/sung/dataset/imagenet # lecun imagenet
+root: /data2/sung/dataset/imagenet # hinton imagenet
 
 # decremental setting
-random_order: True
-num_class: 20
+random_order: False
+num_class: 100
 

@@ -1,6 +1,6 @@
 
 # model and training setting
-model: resnet50
+model: resnet50_cifar20
 pretrained: NULL
 
 batch_size: 128

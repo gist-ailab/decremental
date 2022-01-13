@@ -82,7 +82,7 @@ class DecreCifar100(dset.CIFAR100):
         idx_to_orginal[self.selected_class.index(ind)] = ind
     self.idx_to_orginal = idx_to_orginal
     
-    self.data = reduced_data
+    self.data = list(reduced_data)
     self.targets = reduced_targets
     self.class_to_idx = reduced_class_to_idx
     self.classes = list(reduced_class_to_idx.keys())
@@ -109,10 +109,11 @@ class DecreImageNet(dset.ImageFolder):
 
     mask = np.full_like(self.targets, False, dtype=bool)
     orginal_targets = np.array(self.targets)
+    original_samples = np.array(self.samples)
     for target_class in self.selected_class:
       mask = np.logical_or(mask, orginal_targets == target_class)
-    
-    reduced_data = self.data[mask]
+
+    reduced_samples = original_samples[mask]
     unique_labels, reduced_targets = np.unique(orginal_targets[mask], return_inverse=True)
     
     reduced_class_to_idx = {}
@@ -123,7 +124,8 @@ class DecreImageNet(dset.ImageFolder):
         idx_to_orginal[self.selected_class.index(ind)] = ind
     self.idx_to_orginal = idx_to_orginal
     
-    self.data = reduced_data
+    self.samples = list(zip(map(str, reduced_samples[:, 0]), 
+                            map(int, reduced_targets)))
     self.targets = reduced_targets
     self.class_to_idx = reduced_class_to_idx
     self.classes = list(reduced_class_to_idx.keys())
@@ -143,12 +145,14 @@ def decre_cifar100(cfg, return_train=True):
 
 def decre_imagenet(cfg, return_train=True):
   root = cfg["root"]
-  train_transform, valid_transform = cfg["transform"]('cifar')
+  train_transform, valid_transform = cfg["transform"]('imagenet')
   valid_dataset = DecreImageNet(
+    cfg,
     root=os.path.join(root, "val"),
     transform=valid_transform)
   if return_train:
     train_dataset = DecreImageNet(
+      cfg,
       root=os.path.join(root, "train"),
       transform=train_transform)
     return train_dataset, valid_dataset

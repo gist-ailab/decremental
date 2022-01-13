@@ -12,8 +12,8 @@ from models import load_model
 '''Argument'''
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', default='default', help='configuration name')
-parser.add_argument('--gpu', default="0", help='gpu id')
+parser.add_argument('--config', default='resnet50_imagenet', help='configuration name')
+parser.add_argument('--gpu', default="2", help='gpu id')
 
 args = parser.parse_args()
 
@@ -50,8 +50,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 # load state
-state_dict = torch.load(os.path.join(log_dir, "best.pkl"))
-model.load_state_dict(state_dict)
+if cfg["pretrained"] is not None:
+  pass
+else:
+  state_dict = torch.load(os.path.join(log_dir, "best.pkl"))
+  model.load_state_dict(state_dict)
 
 '''Criterion'''
 criterion = torch.nn.CrossEntropyLoss()

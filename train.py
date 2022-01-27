@@ -1,12 +1,7 @@
 import os
 import argparse
-from tqdm import tqdm
-
 import torch
-import torch.nn as nn
 import torch.backends.cudnn as cudnn
-import timm
-from torchvision.models.resnet import ResNet
 import numpy as np
 
 from utils import *
@@ -15,8 +10,8 @@ from models import load_model
 '''Argument'''
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', default='resnet50_imagenet', help='configuration name')
-parser.add_argument('--gpu', default="1", help='gpu id')
+parser.add_argument('--config', default='resnet50_imagenet40_fix', help='configuration name')
+parser.add_argument('--gpu', default="4", help='gpu id')
 parser.add_argument('--neptune', action='store_true', help='logging to neptune')
 
 args = parser.parse_args()

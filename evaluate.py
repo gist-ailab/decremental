@@ -12,7 +12,7 @@ from models import load_model
 '''Argument'''
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', default='resnet50_imagenet', help='configuration name')
+parser.add_argument('--config', default='resnet50_imagenet20_fix', help='configuration name')
 parser.add_argument('--gpu', default="2", help='gpu id')
 
 args = parser.parse_args()

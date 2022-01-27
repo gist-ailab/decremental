@@ -21,6 +21,15 @@ def resnet50_cifar10():
 
 def resnet50_imagenet():
   return resnet_imagenet.resnet50()
+def resnet50_imagenet20():
+  return resnet_imagenet.resnet50(num_classes=20)
+def resnet50_imagenet40():
+  return resnet_imagenet.resnet50(num_classes=40)
+def resnet50_imagenet60():
+  return resnet_imagenet.resnet50(num_classes=60)
+def resnet50_imagenet80():
+  return resnet_imagenet.resnet50(num_classes=80)
+
 def resnet50_imagenet100():
   return resnet_imagenet.resnet50(num_classes=100)
 def resnet50_imagenet200():
@@ -32,9 +41,6 @@ def resnet50_imagenet600():
 def resnet50_imagenet800():
   return resnet_imagenet.resnet50(num_classes=800)
 
-
-
-
 available_model = {
   "resnet50_cifar100": resnet50_cifar100,
   "resnet50_cifar80": resnet50_cifar80,
@@ -44,6 +50,10 @@ available_model = {
   "resnet50_cifar10": resnet50_cifar10,
   
   "resnet50_imagenet": resnet50_imagenet,
+  "resnet50_imagenet20": resnet50_imagenet20,
+  "resnet50_imagenet40": resnet50_imagenet40,
+  "resnet50_imagenet60": resnet50_imagenet60,
+  "resnet50_imagenet80": resnet50_imagenet80,
   "resnet50_imagenet100": resnet50_imagenet100,
   "resnet50_imagenet200": resnet50_imagenet200,
   "resnet50_imagenet400": resnet50_imagenet400,

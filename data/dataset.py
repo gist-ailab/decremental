@@ -48,14 +48,14 @@ def load_imagenet(option, data_type):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -82,7 +82,7 @@ def load_tiny_imagenet(option):
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(64),
+        transforms.Resize(64),
         transforms.ToTensor(),
         normalize,
     ])
@@ -99,14 +99,14 @@ def load_cub(option, data_type):
                                     std=[0.229, 0.224, 0.225])
     
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -130,14 +130,14 @@ def load_stanford_cars(option, data_type):
                                     std=[0.229, 0.224, 0.225])
         
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -159,14 +159,14 @@ def load_flowers(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -182,14 +182,14 @@ def load_sketches(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -206,14 +206,14 @@ def load_food101(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -228,14 +228,14 @@ def load_uec256(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -251,14 +251,14 @@ def load_food1k(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,
@@ -273,14 +273,14 @@ def load_eurosat(option):
                                      std=[0.229, 0.224, 0.225])
 
     tr_transform = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
 
     val_transform = transforms.Compose([
-        transforms.Scale(256),
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalize,

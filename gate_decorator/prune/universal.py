@@ -34,11 +34,13 @@ class Meltable(nn.Module):
         tmp = pack.train_loader
         if pack.tick_trainset is not None:
             pack.train_loader = pack.tick_trainset
-
+        
+        # ?
         for m in pack.net.modules():
             if isinstance(m, nn.BatchNorm2d):
                 m.weight.data.abs_().add_(1e-3)
 
+        # ReLU => LeakyReLU
         def replace_relu(modules):
             keys = modules.keys()
             for k in keys:
@@ -48,6 +50,7 @@ class Meltable(nn.Module):
                     modules[k] = nn.LeakyReLU(inplace=True)
         replace_relu(pack.net._modules)
 
+        # ?
         count = 0
         def _freeze_bn(curr_iter, total_iter):
             for m in pack.net.modules():
@@ -59,6 +62,7 @@ class Meltable(nn.Module):
                 return FINISH_SIGNAL
         info = pack.trainer.train(pack, iter_hook=_freeze_bn, update=False, mute=True)
 
+        # LeakyReLU => ReLU
         def recover_relu(modules):
             keys = modules.keys()
             for k in keys:
@@ -68,6 +72,7 @@ class Meltable(nn.Module):
                     modules[k] = nn.ReLU(inplace=True)
         recover_relu(pack.net._modules)
 
+        # ?
         for m in pack.net.modules():
             if isinstance(m, nn.BatchNorm2d):
                 m.weight.data.abs_().add_(-1e-3)
@@ -295,19 +300,23 @@ class IterRecoverFramework():
         self.pruned_filters = 0
 
     def recover(self, lr, test):
+        # Initialize Score of GBNs
         for gbn in self.masks:
             if isinstance(gbn, GatedBatchNorm2d):
                 gbn.reset_score()
                 gbn.start_collecting_scores()
 
+        # Initialize learning rate
         for g in self.pack.optimizer.param_groups:
             g['lr'] = lr
 
+        # Train for tick dataset(All Conv2d layer are freezed)
         tmp = self.pack.train_loader
         self.pack.train_loader = self.pack.tick_trainset
         info = self.pack.trainer.train(self.pack)
         self.pack.train_loader = tmp
 
+        # Test 
         if test:
             info.update(self.pack.trainer.test(self.pack))
 

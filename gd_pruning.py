@@ -68,6 +68,21 @@ def eval_prune(pack):
   
   return flops, params
 
+def check_model_state(modules, idx=0):
+  keys = modules.keys()
+  for k in keys:
+    if len(modules[k]._modules) > 0:
+      print("{}{}>>>".format("  "*idx,k))
+      check_model_state(modules[k]._modules, idx=idx+1)
+    else:
+      is_require_grad = False
+      for p in modules[k].parameters():
+        if p.requires_grad:
+          is_require_grad = True
+          break
+      print("{}{}: {}".format("  "*idx,k,is_require_grad))
+      
+
 #endregion
 
 parser = argparse.ArgumentParser()
@@ -138,6 +153,7 @@ for key, value in state_dict.items():
 
 pretrained_model.module.load_state_dict(state_dict)
 
+check_model_state(pretrained_model._modules)
 
 
 '''2. Convert to Meltable(GateDecorator) Model'''
@@ -212,10 +228,11 @@ prune_agent = IterRecoverFramework(pack=pack,
                                    flops_eta=0, 
                                    minium_filter = 3)
 
+
 # Set save point
 flops_save_points = set([40, 38, 35, 32, 30])
 
-iter_idx = 0
+iter_idx = 1
 best_acc = 0.0
 while True:
 
